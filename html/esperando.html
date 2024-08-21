@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/pagestyles.css">
+    <title>Assistindo</title>
+<header>
+    <div class="logo">
+        <a href="../index.html">
+            <img src="../images/logo.png" alt="Logo">
+        </a>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="../html/assistidos.html">Assistidos</a></li>
+            <li><a href="../html/esperando.html">Esperando Continuação</a></li>
+            <li><a href="../html/assistindo.html">Assistindo</a></li>
+            <li><a href="../html/queroassistir.html">Quero Assistir</a></li>
+            <li><a href="../html/gerenciar.html">Gerenciar</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h1>Esperando</h1>
+    <p>Aqui você pode ver todos os animes que ainda não terminaram e vão lançar continuação.</p>
+    <div class="sort-container">
+        <label for="sort">Ordenar por:</label>
+        <select id="sort">
+            <option value="az">Alfabética (A-Z)</option>
+            <option value="za">Alfabética (Z-A)</option>
+            <option value="high-rating">Melhor Avaliação</option>
+            <option value="low-rating">Pior Avaliação</option>
+        </select>
+    </div>
+    <div class="anime-list">
+        <!-- A lista de animes será carregada aqui -->
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Catálogo de Animes criado por Kalleby Schultz</p>
+</footer>
+
+    <div class="modal" id="animeModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">&times;</button>
+            <img id="modalImage" src="" alt="Anime Image">
+            <div class="modal-info">
+                <h2 id="modalTitle"></h2>
+                <p id="modalDescription"></p>
+                <p id="modalRating"></p>
+                <p id="modalReview"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const animeList = document.querySelector('.anime-list');
+            let animes = [];
+
+            function fetchAnimes() {
+            fetch('../php/fetch_animes.php?category=esperando') // Atualize a URL para buscar animes da categoria "esperando"
+                .then(response => response.json())
+                .then(data => {
+                    animes = data;
+                    renderAnimes();
+                })
+                .catch(error => console.error('Erro ao buscar animes:', error));
+        }
+
+            function renderAnimes() {
+                animeList.innerHTML = '';
+
+                animes.forEach(anime => {
+                    const animeItem = document.createElement('div');
+                    animeItem.classList.add('anime-item');
+
+                    const img = document.createElement('img');
+                    img.src = anime.imagem;
+                    img.alt = anime.titulo;
+
+                    const animeInfo = document.createElement('div');
+                    animeInfo.classList.add('anime-info');
+
+                    const title = document.createElement('h2');
+                    title.textContent = anime.titulo;
+
+                    const description = document.createElement('p');
+                    description.textContent = anime.descricao;
+
+                    const rating = document.createElement('p');
+                    rating.textContent = `Avaliação: ${anime.avaliacao}/10`;
+
+                    const review = document.createElement('div');
+                    review.classList.add('resenha');
+                    review.textContent = anime.resenha;
+
+                    animeInfo.appendChild(title);
+                    animeInfo.appendChild(description);
+                    animeInfo.appendChild(rating);
+                    animeInfo.appendChild(review);
+
+                    animeItem.appendChild(img);
+                    animeItem.appendChild(animeInfo);
+
+                    animeItem.addEventListener('click', () => {
+                        const modal = document.getElementById('animeModal');
+                        const modalImage = document.getElementById('modalImage');
+                        const modalTitle = document.getElementById('modalTitle');
+                        const modalDescription = document.getElementById('modalDescription');
+                        const modalRating = document.getElementById('modalRating');
+                        const modalReview = document.getElementById('modalReview').textContent = `Resenha: ${anime.resenha}`;
+
+                        modalImage.src = anime.imagem;
+                        modalTitle.textContent = anime.titulo;
+                        modalDescription.textContent = anime.descricao;
+                        modalRating.textContent = `Avaliação: ${anime.avaliacao}/10`;
+                        modalReview.textContent = anime.resenha;
+
+                        modal.style.display = 'flex'; // Exibe o modal
+                    });
+
+                    animeList.appendChild(animeItem);
+                });
+
+                // Fechar o modal ao clicar no botão
+                document.getElementById('closeModal').addEventListener('click', () => {
+                    document.getElementById('animeModal').style.display = 'none';
+                });
+
+                // Fechar o modal ao clicar fora do conteúdo
+                window.addEventListener('click', (event) => {
+                    if (event.target === document.getElementById('animeModal')) {
+                        document.getElementById('animeModal').style.display = 'none';
+                    }
+                });
+            }
+
+            function sortAnimes(criteria) {
+                switch(criteria) {
+                    case 'az':
+                        animes.sort((a, b) => a.titulo.localeCompare(b.titulo));
+                        break;
+                    case 'za':
+                        animes.sort((a, b) => b.titulo.localeCompare(a.titulo));
+                        break;
+                    case 'high-rating':
+                        animes.sort((a, b) => b.avaliacao - a.avaliacao);
+                        break;
+                    case 'low-rating':
+                        animes.sort((a, b) => a.avaliacao - b.avaliacao);
+                        break;
+                }
+                renderAnimes();
+            }
+
+            document.getElementById('sort').addEventListener('change', (event) => {
+                sortAnimes(event.target.value);
+            });
+
+            fetchAnimes();
+        });
+    </script>
+</body>
+</html>

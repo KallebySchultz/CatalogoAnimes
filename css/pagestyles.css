@@ -1,0 +1,268 @@
+/* Estilos específicos para a página assistidos.html */
+
+/* Reset básico para garantir consistência entre navegadores */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilização geral do corpo */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+
+/* Estilização do cabeçalho */
+header {
+    background-color: #333; /* Cor de fundo do cabeçalho */
+    color: white; /* Cor do texto do cabeçalho */
+    display: flex; /* Exibe os itens em linha */
+    align-items: center; /* Alinha os itens verticalmente ao centro */
+    padding: 20px 40px; /* Adiciona preenchimento ao redor do cabeçalho */
+    position: fixed; /* Torna o cabeçalho fixo no topo */
+    width: 100%; /* Define a largura como 100% */
+    top: 0; /* Posiciona no topo */
+    z-index: 1000; /* Define a ordem de empilhamento */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adiciona sombra ao cabeçalho */
+    box-sizing: border-box; /* Inclui o padding e border na largura e altura total */
+}
+
+.logo a {
+    display: inline-block; /* Permite adicionar efeitos ao link */
+    transition: transform 0.3s ease, filter 0.3s ease; /* Transições suaves para transformação e filtro */
+}
+
+.logo img {
+    height: 50px; /* Define a altura da logo */
+    display: block; /* Remove o espaço embaixo da imagem */
+}
+
+.logo a:hover {
+    transform: scale(1.1); /* Aumenta a logo ligeiramente */
+    filter: brightness(1.1); /* Aumenta o brilho da imagem */
+}
+
+nav {
+    flex-grow: 1; /* Faz o menu de navegação crescer para ocupar o espaço disponível */
+}
+
+nav ul {
+    list-style-type: none; /* Remove os marcadores da lista */
+    padding: 0; /* Remove o preenchimento */
+    margin: 0; /* Remove a margem */
+    display: flex; /* Exibe os itens em linha */
+    justify-content: flex-end; /* Alinha os itens à direita */
+}
+
+nav ul li {
+    margin: 0 15px; /* Adiciona margem entre os itens */
+}
+
+nav ul li a {
+    color: white; /* Cor do texto dos links */
+    text-decoration: none; /* Remove a decoração dos links */
+    padding: 10px 20px; /* Adiciona preenchimento interno */
+    border-radius: 50px; /* Adiciona cantos arredondados */
+    transition: background-color 0.3s; /* Transição suave para a cor de fundo */
+    background-color: rgba(255, 255, 255, 0.1); /* Adiciona fundo semitransparente */
+}
+
+nav ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Cor de fundo dos links ao passar o mouse */
+}
+
+/* Estilização do main */
+main {
+    padding: 40px; /* Adiciona preenchimento ao redor do conteúdo principal */
+    margin-top: 100px; /* Espaço para o header fixo */
+}
+main h1, main p {
+    text-align: center; /* Centraliza o texto */
+    margin-bottom: 20px; /* Adiciona espaço abaixo do título e descrição */
+}
+
+.anime-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.anime-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: #fff;
+    transition: transform 0.3s, box-shadow 0.3s; /* Adicione a transição para o zoom e sombra */
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    cursor: pointer;
+    position: relative;
+}
+
+.anime-item:hover {
+    transform: scale(1.05); /* Aumenta ligeiramente o tamanho do item */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Adiciona uma sombra ao redor do item */
+}
+
+.anime-item img {
+    width: 100%;
+    height: auto;
+}
+
+.anime-info {
+    padding: 10px;
+    text-align: center; /* Centraliza todo o texto dentro do bloco anime-info */
+}
+
+
+.anime-info h2 {
+    font-size: 1.2em;
+    margin: 0 0 10px;
+    text-align: center; /* Adiciona centralização do texto */
+    overflow-wrap: break-word; /* Quebra palavras longas para evitar estouro de container */
+}
+
+
+.anime-info p {
+    margin: 5px 0;
+    color: #666;
+      overflow-wrap: break-word; /* Quebra palavras longas para evitar estouro de container */
+}
+
+.resenha {
+    display: none;
+    margin-top: 10px;
+    white-space: pre-wrap; /* Respeita quebras de linha e espaços múltiplos */
+    overflow-wrap: break-word; /* Quebra palavras longas para evitar estouro de container */
+    word-wrap: break-word; /* Suporte adicional para quebra de palavras */
+}
+
+.anime-item.active .resenha {
+    display: block;
+}
+
+/* Estilos para o modal de visualização expandida */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden; /* Garante que o conteúdo não ultrapasse as bordas */
+    width: 80%;
+    max-width: 800px;
+    display: flex;
+    position: relative;
+}
+
+.modal-content img {
+    width: 50%;
+    height: auto;
+}
+.modal-info {
+    padding: 20px;
+    width: 100%; /* Garante que a área de informações ocupe todo o espaço disponível */
+    overflow: auto; /* Adiciona barras de rolagem se necessário */
+}
+
+
+.modal-info h2{
+    margin: 0 0 10px;
+    word-wrap: break-word; /* Quebra palavras longas para evitar estouro de container */
+    padding-top: 40px; /* Espaço suficiente para evitar sobreposição */
+}
+.modal-info p{
+    margin: 0 0 10px;
+    word-wrap: break-word; /* Quebra palavras longas para evitar estouro de container */
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilo ajustado para o seletor de ordenação */
+.sort-container {
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column; /* Alinha os itens na vertical */
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    max-width: 300px; /* Define uma largura máxima para o contêiner */
+}
+
+.sort-container select {
+    padding: 5px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%; /* Faz o seletor ocupar toda a largura disponível do contêiner */
+    max-width: 200px; /* Define a largura máxima do seletor */
+}
+
+.sort-container label {
+    font-size: 1em;
+}
+
+footer {
+    background-color: #333; /* Cor de fundo do rodapé */
+    color: white; /* Cor do texto do rodapé */
+    text-align: center; /* Centraliza o texto */
+    padding: 20px; /* Adiciona preenchimento ao redor do rodapé */
+    position:static; /* Define a posição do rodapé como fixa */
+    bottom: 0; /* Posiciona no fundo */
+    width: 100%; /* Define a largura como 100% */
+    box-sizing: border-box; /* Inclui o padding na largura e altura total */
+}
+header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+header nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+main {
+    text-align: center;
+    padding: 20px;
+}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Animes</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html">
+                <img src="images/logo.png" alt="Logo do Site">
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="html/assistidos.html">Assistidos</a></li>
+                <li><a href="html/esperando.html">Esperando Continuação</a></li>
+                <li><a href="html/assistindo.html">Assistindo</a></li>
+                <li><a href="html/queroassistir.html">Quero Assistir</a></li>
+                <li><a href="html/gerenciar.html">Gerenciar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="banner">
+            <img src="images/banner.png" alt="Banner Principal">
+            <div class="banner-text">
+                <h1>Bem-vindo ao Catálogo de Animes</h1>
+                <p>Organize os seus animes de maneira organizada e bonita.</p>
+            </div>
+        </section>
+        <section id="destaques">
+            <h2>Destaques</h2>
+            <div class="anime-list" id="destaques-list">
+                <!-- Inserir cards ou itens de animes recomendados ou populares -->
+            </div>
+        </section>
+
+        <section id="assistidos">
+            <h2>Assistidos</h2>
+            <div class="anime-list" id="assistidos-list">
+                <!-- Inserir lista de animes assistidos -->
+            </div>
+        </section>
+
+        <section id="assistindo">
+            <h2>Assistindo</h2>
+            <div class="anime-list" id="assistindo-list">
+                <!-- Inserir lista de animes assistindo atualmente -->
+            </div>
+        </section>
+
+        <section id="esperando">
+            <h2>Esperando Continuação</h2>
+            <div class="anime-list" id="esperando-list">
+                <!-- Inserir lista de animes esperando continuação -->
+            </div>
+        <section id="queroassistir">
+            <h2>Quero Assistir</h2>
+            <div class="anime-list" id="queroassistir-list">
+                <!-- Inserir lista de animes que deseja assistir -->
+            </div>
+        </section>
+    </main>
+
+
+    <footer>
+        <p>&copy; 2024 Catálogo de Animes criado por Kalleby Schultz</p>
+    </footer>
+
+    <div class="modal" id="animeModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">&times;</button>
+            <img id="modalImage" src="" alt="Anime Image">
+            <div class="modal-info">
+                <h2 id="modalTitle"></h2>
+                <p id="modalDescription"></p>
+                <p id="modalRating"></p>
+                <p class="resenha" id="modalReview"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = {
+                destaques: 'high-rating',
+                assistidos: 'assistidos',
+                assistindo: 'assistindo',
+                queroassistir: 'queroassistir',
+                esperando: 'esperando'
+            };
+
+            function fetchAnimes(category, sectionId) {
+                fetch(`php/fetch_animes.php?category=${category}`)
+                    .then(response => response.json())
+                    .then(data => renderAnimes(data, sectionId))
+                    .catch(error => console.error('Erro ao buscar animes:', error));
+            }
+
+            function renderAnimes(animes, sectionId) {
+    const animeList = document.getElementById(`${sectionId}-list`);
+    animeList.innerHTML = '';
+
+    // Limita a lista a no máximo 7 animes
+    const limitedAnimes = animes.slice(0, 5);
+
+    limitedAnimes.forEach(anime => {
+        const animeItem = document.createElement('div');
+        animeItem.classList.add('anime-item');
+        animeItem.dataset.id = anime.id;
+
+        let imgPath = anime.imagem;
+        // Verifica se a página é o index.html e ajusta o caminho da imagem
+        if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+            imgPath = imgPath.replace('../', ''); // Remove o '../' do início do caminho da imagem
+        }
+
+        const img = document.createElement('img');
+        img.src = imgPath;
+        img.alt = anime.titulo;
+
+        const animeInfo = document.createElement('div');
+        animeInfo.classList.add('anime-info');
+
+        const title = document.createElement('h2');
+        title.textContent = anime.titulo;
+
+        const description = document.createElement('p');
+        description.textContent = anime.descricao;
+
+        const rating = document.createElement('p');
+        rating.textContent = `Avaliação: ${anime.avaliacao}/10`;
+
+        animeInfo.appendChild(title);
+        animeInfo.appendChild(description);
+        animeInfo.appendChild(rating);
+
+        animeItem.appendChild(img);
+        animeItem.appendChild(animeInfo);
+        animeList.appendChild(animeItem);
+
+        animeItem.addEventListener('click', () => {
+            showModal(anime);
+        });
+    });
+}
+
+
+            function showModal(anime) {
+                const modal = document.getElementById('animeModal');
+                document.getElementById('modalImage').src = anime.imagem;
+                document.getElementById('modalTitle').textContent = anime.titulo;
+                document.getElementById('modalDescription').textContent = anime.descricao;
+                document.getElementById('modalRating').textContent = `Avaliação: ${anime.avaliacao}`;
+                document.getElementById('modalReview').textContent = `Resenha: ${anime.resenha}`;
+                modal.style.display = 'flex';
+            }
+
+            document.getElementById('closeModal').addEventListener('click', () => {
+                document.getElementById('animeModal').style.display = 'none';
+            });
+
+            Object.keys(sections).forEach(sectionId => {
+                fetchAnimes(sections[sectionId], sectionId);
+            });
+        });
+    </script>
+</body>
+</html>
