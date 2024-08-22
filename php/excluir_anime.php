@@ -16,24 +16,29 @@ if ($conn->connect_error) {
 $id = intval($_POST['animeId']);
 
 // Consulta SQL para obter o caminho da imagem antes de excluir o registro
-$sql_select = "SELECT imagem FROM animes WHERE id = $id";
-$result = $conn->query($sql_select);
+$stmt = $conn->prepare("SELECT imagem FROM animes WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $imagem = $row['imagem'];
 
     // Verifica se o arquivo de imagem existe e o exclui
-    if (file_exists("../images/$imagem")) {
-        unlink("../images/$imagem");
+    $imagePath = "../images/" . $imagem;
+    if (file_exists($imagePath)) {
+        unlink($imagePath);
     }
 
     // Consulta SQL para excluir o anime pelo ID
-    $sql_delete = "DELETE FROM animes WHERE id = $id";
-    $conn->query($sql_delete);
+    $stmt = $conn->prepare("DELETE FROM animes WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
 }
 
 // Fecha a conexão
+$stmt->close();
 $conn->close();
 
 // Redireciona de volta para a página de gerenciamento

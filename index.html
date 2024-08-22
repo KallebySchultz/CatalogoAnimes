@@ -14,12 +14,15 @@
             </a>
         </div>
         <nav>
-            <ul>
+            <ul id="nav-menu">
                 <li><a href="html/assistidos.html">Assistidos</a></li>
                 <li><a href="html/esperando.html">Esperando Continuação</a></li>
                 <li><a href="html/assistindo.html">Assistindo</a></li>
                 <li><a href="html/queroassistir.html">Quero Assistir</a></li>
                 <li><a href="html/gerenciar.html">Gerenciar</a></li>
+                <li id="login-logout">
+                    <!-- O texto será atualizado pelo JavaScript -->
+                </li>
             </ul>
         </nav>
     </header>
@@ -29,9 +32,10 @@
             <img src="images/banner.png" alt="Banner Principal">
             <div class="banner-text">
                 <h1>Bem-vindo ao Catálogo de Animes</h1>
-                <p>Organize os seus animes de maneira organizada e bonita.</p>
+                <p id="banner-message">Organize os seus animes de maneira organizada e bonita.</p>
             </div>
         </section>
+        
         <section id="destaques">
             <h2>Destaques</h2>
             <div class="anime-list" id="destaques-list">
@@ -58,6 +62,8 @@
             <div class="anime-list" id="esperando-list">
                 <!-- Inserir lista de animes esperando continuação -->
             </div>
+        </section>
+
         <section id="queroassistir">
             <h2>Quero Assistir</h2>
             <div class="anime-list" id="queroassistir-list">
@@ -65,7 +71,6 @@
             </div>
         </section>
     </main>
-
 
     <footer>
         <p>&copy; 2024 Catálogo de Animes criado por Kalleby Schultz</p>
@@ -86,87 +91,129 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const sections = {
-                destaques: 'high-rating',
-                assistidos: 'assistidos',
-                assistindo: 'assistindo',
-                queroassistir: 'queroassistir',
-                esperando: 'esperando'
-            };
+            const loginLogoutMenuItem = document.getElementById('login-logout');
+            const bannerMessage = document.getElementById('banner-message');
 
-            function fetchAnimes(category, sectionId) {
-                fetch(`php/fetch_animes.php?category=${category}`)
-                    .then(response => response.json())
-                    .then(data => renderAnimes(data, sectionId))
-                    .catch(error => console.error('Erro ao buscar animes:', error));
+            // Função para atualizar o menu de navegação com login/logout
+            function updateNavMenu(userLoggedIn) {
+                if (userLoggedIn) {
+                    loginLogoutMenuItem.innerHTML = '<a href="php/logout.php">Logout</a>';
+                    bannerMessage.textContent = 'Organize os seus animes de maneira organizada e bonita.';
+                    fetchAnimes(); // Carregar animes se o usuário estiver logado
+                } else {
+                    loginLogoutMenuItem.innerHTML = '<a href="html/login.html">Login</a>';
+                    bannerMessage.textContent = 'Faça login para visualizar os animes.';
+                    // Limpar as listas de animes se o usuário não estiver logado
+                    document.querySelectorAll('.anime-list').forEach(list => {
+                        list.innerHTML = '';
+                    });
+                }
             }
 
-            function renderAnimes(animes, sectionId) {
-    const animeList = document.getElementById(`${sectionId}-list`);
-    animeList.innerHTML = '';
+            // Verifica se o usuário está logado
+            fetch('php/get_user_id.php')
+                .then(response => response.json())
+                .then(data => {
+                    updateNavMenu(data.userId !== null);
+                })
+                .catch(error => {
+                    console.error('Erro ao verificar login:', error);
+                    updateNavMenu(false);
+                });
 
-    // Limita a lista a no máximo 7 animes
-    const limitedAnimes = animes.slice(0, 5);
+            function fetchAnimes() {
+                const sections = {
+                    destaques: 'high-rating',
+                    assistidos: 'assistidos',
+                    assistindo: 'assistindo',
+                    queroassistir: 'queroassistir',
+                    esperando: 'esperando'
+                };
 
-    limitedAnimes.forEach(anime => {
-        const animeItem = document.createElement('div');
-        animeItem.classList.add('anime-item');
-        animeItem.dataset.id = anime.id;
+                function fetchAnimesForCategory(category, sectionId) {
+                    fetch(`php/fetch_animes.php?category=${category}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'error') {
+                                updateNavMenu(false);
+                            } else {
+                                renderAnimes(data, sectionId);
+                            }
+                        })
+                        .catch(error => console.error('Erro ao buscar animes:', error));
+                }
 
-        let imgPath = anime.imagem;
-        // Verifica se a página é o index.html e ajusta o caminho da imagem
-        if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
-            imgPath = imgPath.replace('../', ''); // Remove o '../' do início do caminho da imagem
-        }
+                function renderAnimes(animes, sectionId) {
+                    const animeList = document.getElementById(`${sectionId}-list`);
+                    animeList.innerHTML = '';
 
-        const img = document.createElement('img');
-        img.src = imgPath;
-        img.alt = anime.titulo;
+                    const limitedAnimes = animes.slice(0, 5);
 
-        const animeInfo = document.createElement('div');
-        animeInfo.classList.add('anime-info');
+                    limitedAnimes.forEach(anime => {
+                        const animeItem = document.createElement('div');
+                        animeItem.classList.add('anime-item');
+                        animeItem.dataset.id = anime.id;
 
-        const title = document.createElement('h2');
-        title.textContent = anime.titulo;
+                        let imgPath = anime.imagem;
+                        // Ajusta o caminho da imagem para que funcione no index.html e nas modais
+                        if (imgPath.startsWith('../uploads/')) {
+                            imgPath = imgPath.substring(3); // Remove '../'
+                        }
 
-        const description = document.createElement('p');
-        description.textContent = anime.descricao;
+                        const img = document.createElement('img');
+                        img.src = imgPath;
+                        img.alt = anime.titulo;
 
-        const rating = document.createElement('p');
-        rating.textContent = `Avaliação: ${anime.avaliacao}/10`;
+                        const animeInfo = document.createElement('div');
+                        animeInfo.classList.add('anime-info');
 
-        animeInfo.appendChild(title);
-        animeInfo.appendChild(description);
-        animeInfo.appendChild(rating);
+                        const title = document.createElement('h2');
+                        title.textContent = anime.titulo;
 
-        animeItem.appendChild(img);
-        animeItem.appendChild(animeInfo);
-        animeList.appendChild(animeItem);
+                        const description = document.createElement('p');
+                        description.textContent = anime.descricao;
 
-        animeItem.addEventListener('click', () => {
-            showModal(anime);
-        });
-    });
-}
+                        const rating = document.createElement('p');
+                        rating.textContent = `Avaliação: ${anime.avaliacao}/10`;
 
+                        animeInfo.appendChild(title);
+                        animeInfo.appendChild(description);
+                        animeInfo.appendChild(rating);
 
-            function showModal(anime) {
-                const modal = document.getElementById('animeModal');
-                document.getElementById('modalImage').src = anime.imagem;
-                document.getElementById('modalTitle').textContent = anime.titulo;
-                document.getElementById('modalDescription').textContent = anime.descricao;
-                document.getElementById('modalRating').textContent = `Avaliação: ${anime.avaliacao}`;
-                document.getElementById('modalReview').textContent = `Resenha: ${anime.resenha}`;
-                modal.style.display = 'flex';
+                        animeItem.appendChild(img);
+                        animeItem.appendChild(animeInfo);
+                        animeList.appendChild(animeItem);
+
+                        animeItem.addEventListener('click', () => {
+                            showModal(anime);
+                        });
+                    });
+                }
+
+                function showModal(anime) {
+                    const modal = document.getElementById('animeModal');
+                    let imgPath = anime.imagem;
+                    // Ajusta o caminho da imagem para a modal
+                    if (imgPath.startsWith('../uploads/')) {
+                        imgPath = imgPath.substring(3); // Remove '../'
+                    }
+
+                    document.getElementById('modalImage').src = imgPath;
+                    document.getElementById('modalTitle').textContent = anime.titulo;
+                    document.getElementById('modalDescription').textContent = anime.descricao;
+                    document.getElementById('modalRating').textContent = `Avaliação: ${anime.avaliacao}`;
+                    document.getElementById('modalReview').textContent = `Resenha: ${anime.resenha}`;
+                    modal.style.display = 'flex';
+                }
+
+                document.getElementById('closeModal').addEventListener('click', () => {
+                    document.getElementById('animeModal').style.display = 'none';
+                });
+
+                Object.keys(sections).forEach(sectionId => {
+                    fetchAnimesForCategory(sections[sectionId], sectionId);
+                });
             }
-
-            document.getElementById('closeModal').addEventListener('click', () => {
-                document.getElementById('animeModal').style.display = 'none';
-            });
-
-            Object.keys(sections).forEach(sectionId => {
-                fetchAnimes(sections[sectionId], sectionId);
-            });
         });
     </script>
 </body>

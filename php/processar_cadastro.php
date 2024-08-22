@@ -1,4 +1,6 @@
 <?php
+session_start(); // Inicia a sessão para acessar informações de login
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -12,56 +14,57 @@ if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
 }
 
-// Variável para verificar se o cadastro foi bem-sucedido
-$success = false;
+// Verifica se o usuário está logado
+if (!isset($_SESSION['user_id'])) {
+    die("Usuário não está logado.");
+}
 
-// Verifica se o formulário foi enviado
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $titulo = $_POST["titulo"];
-    $categoria = $_POST["categoria"];
-    $descricao = $_POST["descricao"];
-    $avaliacao = $_POST["avaliacao"];
-    $resenha = $_POST["resenha"];
+$userId = intval($_SESSION['user_id']);
 
-    // Verifica se a imagem foi enviada e trata o upload
-    if (isset($_FILES["imagem"]) && $_FILES["imagem"]["error"] == 0) {
-        // Define o nome da imagem com base no título do anime
-        $imagem_nome = $titulo . '.' . pathinfo($_FILES["imagem"]["name"], PATHINFO_EXTENSION);
-        $target_dir = "../uploads/";
-        $target_file = $target_dir . $imagem_nome;
+// Obtém os dados do formulário
+$titulo = isset($_POST['titulo']) ? $conn->real_escape_string($_POST['titulo']) : null;
+$categoria = isset($_POST['categoria']) ? $conn->real_escape_string($_POST['categoria']) : null;
+$descricao = isset($_POST['descricao']) ? $conn->real_escape_string($_POST['descricao']) : null;
+$avaliacao = isset($_POST['avaliacao']) && $_POST['avaliacao'] !== '' ? floatval($_POST['avaliacao']) : null;
+$resenha = isset($_POST['resenha']) ? $conn->real_escape_string($_POST['resenha']) : null;
 
-        if (move_uploaded_file($_FILES["imagem"]["tmp_name"], $target_file)) {
-            $imagem = $target_file; // Caminho da imagem
-        } else {
-            $imagem = null; // Define como nulo se o upload falhar
-        }
+// Verifica se os campos obrigatórios estão preenchidos
+if (!$titulo || !$categoria || !$descricao) {
+    die("Por favor, preencha todos os campos obrigatórios.");
+}
+
+// Verifica se foi enviado um arquivo de imagem
+if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+    $uploadDir = '../uploads/';
+    $uploadFile = $uploadDir . basename($_FILES['imagem']['name']);
+    
+    // Mover o arquivo para a pasta de uploads
+    if (move_uploaded_file($_FILES['imagem']['tmp_name'], $uploadFile)) {
+        $imagem = basename($_FILES['imagem']['name']);
     } else {
-        $imagem = null; // Define como nulo se a imagem não for fornecida
+        echo "Erro ao carregar a imagem.";
+        exit();
     }
+} else {
+    $imagem = null;
+}
 
-    // Prepara a consulta SQL
-    $stmt = $conn->prepare("INSERT INTO animes (titulo, imagem, categoria, descricao, avaliacao, resenha) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssss", $titulo, $imagem, $categoria, $descricao, $avaliacao, $resenha);
+// Insere o novo anime no banco de dados
+$sql = "INSERT INTO animes (titulo, categoria, descricao, avaliacao, resenha, imagem, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("sssdssi", $titulo, $categoria, $descricao, $avaliacao, $resenha, $imagem, $userId);
 
-    // Executa a consulta
-    if ($stmt->execute()) {
-        $success = true; // Define sucesso se a consulta for bem-sucedida
-    }
-
-    // Fecha a declaração
-    $stmt->close();
+if ($stmt->execute()) {
+    echo "Anime cadastrado com sucesso.";
+} else {
+    echo "Erro ao cadastrar o anime: " . $stmt->error;
 }
 
 // Fecha a conexão
+$stmt->close();
 $conn->close();
 
-// Redireciona para a página anterior
-if ($success) {
-    header("Location: ../html/gerenciar.html");
-    exit();
-} else {
-    // Redireciona para a página anterior com um parâmetro de erro
-    header("Location: ../html/gerenciar.html?error=1");
-    exit();
-}
+// Redireciona de volta para a página de gerenciamento
+header('Location: ../html/gerenciar.html');
+exit();
 ?>

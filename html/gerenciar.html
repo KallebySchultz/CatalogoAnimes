@@ -7,6 +7,16 @@
     <title>Gerenciamento de Animes</title>
 </head>
 <body>
+    <?php
+    session_start();
+
+    // Verifica se o usuário está logado
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ../html/login.html");
+        exit();
+    }
+    ?>
+
     <header>
         <div class="logo">
             <a href="../index.html">

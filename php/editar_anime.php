@@ -24,9 +24,17 @@ $resenha = isset($_POST['resenha']) ? $conn->real_escape_string($_POST['resenha'
 
 // Verifica se foi enviado um novo arquivo de imagem
 if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = '../uploads/';
+    $uploadDir = '../images/';
     $uploadFile = $uploadDir . basename($_FILES['imagem']['name']);
-    
+
+    // Verifica se o arquivo é uma imagem
+    $imageFileType = strtolower(pathinfo($uploadFile, PATHINFO_EXTENSION));
+    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+    if (!in_array($imageFileType, $allowedTypes)) {
+        echo "Formato de imagem não suportado.";
+        exit();
+    }
+
     // Mover o arquivo para a pasta de uploads
     if (move_uploaded_file($_FILES['imagem']['tmp_name'], $uploadFile)) {
         $imagem = basename($_FILES['imagem']['name']);
@@ -39,8 +47,10 @@ if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
 }
 
 // Consulta para buscar os dados atuais do anime
-$sql = "SELECT * FROM animes WHERE id = $id";
-$result = $conn->query($sql);
+$stmt = $conn->prepare("SELECT * FROM animes WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $anime = $result->fetch_assoc();
 
@@ -57,23 +67,17 @@ if ($result->num_rows > 0) {
 }
 
 // Atualiza o banco de dados com os dados fornecidos
-$sql = "UPDATE animes SET 
-    titulo='$titulo', 
-    categoria='$categoria', 
-    descricao='$descricao', 
-    avaliacao=$avaliacao, 
-    resenha='$resenha', 
-    imagem='$imagem' 
-WHERE id=$id";
+$stmt = $conn->prepare("UPDATE animes SET titulo=?, categoria=?, descricao=?, avaliacao=?, resenha=?, imagem=? WHERE id=?");
+$stmt->bind_param("sssdssi", $titulo, $categoria, $descricao, $avaliacao, $resenha, $imagem, $id);
 
-// Executa a consulta
-if ($conn->query($sql) === TRUE) {
+if ($stmt->execute()) {
     echo "Anime atualizado com sucesso.";
 } else {
-    echo "Erro ao atualizar o anime: " . $conn->error;
+    echo "Erro ao atualizar o anime: " . $stmt->error;
 }
 
 // Fecha a conexão
+$stmt->close();
 $conn->close();
 
 // Redireciona de volta para a página de gerenciamento
