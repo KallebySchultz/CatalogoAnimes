@@ -16,6 +16,7 @@ if ($conn->connect_error) {
 $user = $_POST['username'];
 $email = $_POST['email'];
 $pass = $_POST['password'];
+$confirm_pass = $_POST['confirm_password'];
 
 // Verifica se o nome de usuário já existe
 $sql = "SELECT * FROM users WHERE username = ?";
@@ -29,13 +30,16 @@ if ($result->num_rows > 0) {
     exit();
 }
 
-// Hash da senha
-$hashed_password = password_hash($pass, PASSWORD_DEFAULT);
+// Verifica se as senhas coincidem
+if ($pass !== $confirm_pass) {
+    echo "<script>alert('As senhas não coincidem.'); window.location.href = '../html/register.html';</script>";
+    exit();
+}
 
-// Insere o novo usuário no banco de dados
+// Insere o novo usuário no banco de dados com a senha em texto claro
 $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("sss", $user, $email, $hashed_password);
+$stmt->bind_param("sss", $user, $email, $pass);
 
 if ($stmt->execute()) {
     echo "<script>alert('Usuário registrado com sucesso!'); window.location.href = '../html/login.html';</script>";

@@ -4,19 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/forms.css">
 </head>
 <body>
-    <form id="loginForm" method="post">
-        <label for="username">Usuário:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Senha:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <button type="submit">Login</button>
-    </form>
-    <p>Não tem uma conta? <a href="register.html">Registre-se aqui</a></p>
+    <div class="form-container">
+        <h1 class="form-title">Login</h1>
+        <form id="loginForm" method="post">
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" name="username" required>
+            <br>
+            <label for="password">Senha:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit">Login</button>
+        </form>
+        <p class="form-link">Não tem uma conta? <a href="register.html">Registre-se aqui</a></p>
+    </div>
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(event) {

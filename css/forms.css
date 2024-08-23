@@ -1,0 +1,99 @@
+/* Reset básico para garantir consistência entre navegadores */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilização geral do corpo */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ocupa toda a altura da viewport */
+}
+
+/* Container do formulário para centralização */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ocupa toda a altura da viewport */
+}
+
+/* Estilização do formulário */
+form {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    width: 120%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Estilização dos rótulos */
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Estilização dos campos de entrada */
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+    width: calc(100% - 20px); /* Ajusta a largura considerando o padding */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Inclui padding e border na largura total */
+}
+
+/* Estilização do botão de login/cadastro */
+form button[type="submit"] {
+    background-color: #333; /* Cor de fundo do botão */
+    color: white; /* Cor do texto do botão */
+    border: none; /* Remove a borda padrão do botão */
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+form button[type="submit"]:hover {
+    background-color: #555; /* Cor de fundo do botão ao passar o mouse */
+}
+
+/* Estilização das mensagens de alternância */
+.form-link {
+    margin-top: 15px;
+    color: #333;
+}
+
+.form-link a {
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.form-link a:hover {
+    text-decoration: underline;
+}
+
+/* Estilização do título do formulário */
+.form-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2em; /* Tamanho do texto */
+    color: #333; /* Cor do texto */
+}

@@ -6,7 +6,7 @@ include '../php/check_session.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/styles.css"> <!-- Atualize o caminho se necessário -->
+    <link rel="stylesheet" href="../css/pagestyles.css"> <!-- Atualize o caminho se necessário -->
     <title>Assistidos</title>
     <style>
         /* Adicione estilos básicos para o menu suspenso */
@@ -177,14 +177,9 @@ include '../php/check_session.php';
                     const rating = document.createElement('p');
                     rating.textContent = `Avaliação: ${anime.avaliacao}/10`;
 
-                    const review = document.createElement('div');
-                    review.classList.add('resenha');
-                    review.textContent = anime.resenha;
-
                     animeInfo.appendChild(title);
                     animeInfo.appendChild(description);
                     animeInfo.appendChild(rating);
-                    animeInfo.appendChild(review);
 
                     animeItem.appendChild(img);
                     animeItem.appendChild(animeInfo);
