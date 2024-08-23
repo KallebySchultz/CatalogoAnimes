@@ -5,6 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo de Animes</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Adicione estilos básicos para o menu suspenso */
+        #auth-options {
+            position: relative;
+            display: inline-block;
+        }
+        #auth-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            z-index: 1;
+        }
+        #auth-menu a {
+            display: block;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: #000;
+        }
+        #auth-menu a:hover {
+            background-color: #f1f1f1;
+        }
+        /* Estilos para a imagem do menu */
+      #auth-options img {
+    cursor: pointer;
+    width: 50px; /* Ajuste o tamanho da imagem conforme necessário */
+    height: 50px; /* Ajuste o tamanho da imagem conforme necessário */
+    display: block;
+    margin: -20px; /* Ajuste a margem se necessário */
+    margin-left: 10px;
+}
+
+    </style>
 </head>
 <body>
     <header>
@@ -19,9 +53,14 @@
                 <li><a href="html/esperando.html">Esperando Continuação</a></li>
                 <li><a href="html/assistindo.html">Assistindo</a></li>
                 <li><a href="html/queroassistir.html">Quero Assistir</a></li>
-                <li><a href="html/gerenciar.html">Gerenciar</a></li>
-                <li id="login-logout">
-                    <!-- O texto será atualizado pelo JavaScript -->
+                <li id="auth-options">
+                    <img src="images/login.png" alt="Auth Options">
+                    <div id="auth-menu">
+                        <a href="html/login.html" id="login-link">Login</a>
+                        <a href="html/register.html" id="register-link">Cadastro</a>
+                        <a href="html/gerenciar.html" id="manage-link" style="display: none;">Gerenciar</a>
+                        <a href="php/logout.php" id="logout-link" style="display: none;">Logout</a>
+                    </div>
                 </li>
             </ul>
         </nav>
@@ -91,17 +130,33 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const loginLogoutMenuItem = document.getElementById('login-logout');
+            const authOptions = document.getElementById('auth-options');
+            const authMenu = document.getElementById('auth-menu');
+            const loginLink = document.getElementById('login-link');
+            const registerLink = document.getElementById('register-link');
+            const manageLink = document.getElementById('manage-link');
+            const logoutLink = document.getElementById('logout-link');
             const bannerMessage = document.getElementById('banner-message');
+
+            // Alterna o menu suspenso de autenticação ao clicar na imagem
+            authOptions.addEventListener('click', function() {
+                authMenu.style.display = authMenu.style.display === 'block' ? 'none' : 'block';
+            });
 
             // Função para atualizar o menu de navegação com login/logout
             function updateNavMenu(userLoggedIn) {
                 if (userLoggedIn) {
-                    loginLogoutMenuItem.innerHTML = '<a href="php/logout.php">Logout</a>';
+                    loginLink.style.display = 'none';
+                    registerLink.style.display = 'none';
+                    manageLink.style.display = 'block';
+                    logoutLink.style.display = 'block';
                     bannerMessage.textContent = 'Organize os seus animes de maneira organizada e bonita.';
                     fetchAnimes(); // Carregar animes se o usuário estiver logado
                 } else {
-                    loginLogoutMenuItem.innerHTML = '<a href="html/login.html">Login</a>';
+                    loginLink.style.display = 'block';
+                    registerLink.style.display = 'block';
+                    manageLink.style.display = 'none';
+                    logoutLink.style.display = 'none';
                     bannerMessage.textContent = 'Faça login para visualizar os animes.';
                     // Limpar as listas de animes se o usuário não estiver logado
                     document.querySelectorAll('.anime-list').forEach(list => {
@@ -190,30 +245,30 @@
                     });
                 }
 
-                function showModal(anime) {
-                    const modal = document.getElementById('animeModal');
-                    let imgPath = anime.imagem;
-                    // Ajusta o caminho da imagem para a modal
-                    if (imgPath.startsWith('../uploads/')) {
-                        imgPath = imgPath.substring(3); // Remove '../'
-                    }
-
-                    document.getElementById('modalImage').src = imgPath;
-                    document.getElementById('modalTitle').textContent = anime.titulo;
-                    document.getElementById('modalDescription').textContent = anime.descricao;
-                    document.getElementById('modalRating').textContent = `Avaliação: ${anime.avaliacao}`;
-                    document.getElementById('modalReview').textContent = `Resenha: ${anime.resenha}`;
-                    modal.style.display = 'flex';
-                }
-
-                document.getElementById('closeModal').addEventListener('click', () => {
-                    document.getElementById('animeModal').style.display = 'none';
-                });
-
-                Object.keys(sections).forEach(sectionId => {
-                    fetchAnimesForCategory(sections[sectionId], sectionId);
+                Object.keys(sections).forEach(section => {
+                    fetchAnimesForCategory(sections[section], section);
                 });
             }
+
+            function showModal(anime) {
+                const modal = document.getElementById('animeModal');
+                let imgPath = anime.imagem;
+                // Ajusta o caminho da imagem para a modal
+                if (imgPath.startsWith('../uploads/')) {
+                    imgPath = imgPath.substring(3); // Remove '../'
+                }
+
+                document.getElementById('modalImage').src = imgPath;
+                document.getElementById('modalTitle').textContent = anime.titulo;
+                document.getElementById('modalDescription').textContent = anime.descricao;
+                document.getElementById('modalRating').textContent = `Avaliação: ${anime.avaliacao}`;
+                document.getElementById('modalReview').textContent = `Resenha: ${anime.resenha}`;
+                modal.style.display = 'flex';
+            }
+
+            document.getElementById('closeModal').addEventListener('click', function() {
+                document.getElementById('animeModal').style.display = 'none';
+            });
         });
     </script>
 </body>
