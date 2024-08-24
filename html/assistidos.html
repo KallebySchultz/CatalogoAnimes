@@ -9,7 +9,7 @@ include '../php/check_session.php';
     <link rel="stylesheet" href="../css/pagestyles.css"> <!-- Atualize o caminho se necessário -->
     <title>Assistidos</title>
     <style>
-        /* Adicione estilos básicos para o menu suspenso */
+        /* Estilos básicos para o menu suspenso */
         #auth-options {
             position: relative;
             display: inline-block;
@@ -39,6 +39,12 @@ include '../php/check_session.php';
             display: block;
             margin: -20px; /* Ajuste a margem se necessário */
             margin-left: 10px;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+        /* Efeito ao passar o mouse sobre a imagem do menu */
+        #auth-options img:hover {
+            transform: scale(1.1); /* Aumenta a escala da imagem */
+            filter: brightness(1.2); /* Aumenta o brilho da imagem */
         }
     </style>
 </head>

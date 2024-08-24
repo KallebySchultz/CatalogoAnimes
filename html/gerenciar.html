@@ -5,6 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/styles.css">
     <title>Gerenciamento de Animes</title>
+    <style>
+        /* Estilos básicos para o menu suspenso */
+        #auth-options {
+            position: relative;
+            display: inline-block;
+        }
+        #auth-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            z-index: 1;
+        }
+        #auth-menu a {
+            display: block;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: #000;
+        }
+        #auth-menu a:hover {
+            background-color: #f1f1f1;
+        }
+        /* Estilos para a imagem do menu */
+        #auth-options img {
+            cursor: pointer;
+            width: 50px; /* Ajuste o tamanho da imagem conforme necessário */
+            height: 50px; /* Ajuste o tamanho da imagem conforme necessário */
+            display: block;
+            margin: -20px; /* Ajuste a margem se necessário */
+            margin-left: 10px;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+        /* Efeito ao passar o mouse sobre a imagem do menu */
+        #auth-options img:hover {
+            transform: scale(1.1); /* Aumenta a escala da imagem */
+            filter: brightness(1.2); /* Aumenta o brilho da imagem */
+        }
+    </style>
 </head>
 <body>
     <?php
@@ -29,7 +68,15 @@
                 <li><a href="../html/esperando.html">Esperando Continuação</a></li>
                 <li><a href="../html/assistindo.html">Assistindo</a></li>
                 <li><a href="../html/queroassistir.html">Quero Assistir</a></li>
-                <li><a href="../html/gerenciar.html">Gerenciar</a></li>
+                <li id="auth-options">
+                    <img src="../images/login.png" alt="Auth Options">
+                    <div id="auth-menu">
+                        <a href="../html/login.html" id="login-link">Login</a>
+                        <a href="../html/register.html" id="register-link">Cadastro</a>
+                        <a href="../html/gerenciar.html" id="manage-link" style="display: none;">Gerenciar</a>
+                        <a href="../php/logout.php" id="logout-link" style="display: none;">Logout</a>
+                    </div>
+                </li>
             </ul>
         </nav>
     </header>
@@ -125,69 +172,107 @@
         <p>&copy; 2024 Catálogo de Animes criado por Kalleby Schultz</p>
     </footer>
     <script>
-        document.getElementById('addOption').addEventListener('click', () => {
-            document.getElementById('addForm').classList.add('active');
-            document.getElementById('editForm').classList.remove('active');
-            document.getElementById('deleteForm').classList.remove('active');
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const authOptions = document.getElementById('auth-options');
+            const authMenu = document.getElementById('auth-menu');
+            const loginLink = document.getElementById('login-link');
+            const registerLink = document.getElementById('register-link');
+            const manageLink = document.getElementById('manage-link');
+            const logoutLink = document.getElementById('logout-link');
 
-        document.getElementById('editOption').addEventListener('click', () => {
-            document.getElementById('addForm').classList.remove('active');
-            document.getElementById('editForm').classList.add('active');
-            document.getElementById('deleteForm').classList.remove('active');
-            fetchAnimes('edit');
-        });
+            // Alterna o menu suspenso de autenticação ao clicar na imagem
+            authOptions.addEventListener('click', function() {
+                authMenu.style.display = authMenu.style.display === 'block' ? 'none' : 'block';
+            });
 
-        document.getElementById('deleteOption').addEventListener('click', () => {
-            document.getElementById('addForm').classList.remove('active');
-            document.getElementById('editForm').classList.remove('active');
-            document.getElementById('deleteForm').classList.add('active');
-            fetchAnimes('delete');
-        });
+            // Função para atualizar o menu de navegação com login/logout
+            function updateNavMenu(userLoggedIn) {
+                if (userLoggedIn) {
+                    loginLink.style.display = 'none';
+                    registerLink.style.display = 'none';
+                    manageLink.style.display = 'block';
+                    logoutLink.style.display = 'block';
+                } else {
+                    loginLink.style.display = 'block';
+                    registerLink.style.display = 'block';
+                    manageLink.style.display = 'none';
+                    logoutLink.style.display = 'none';
+                }
+            }
 
-        document.getElementById('closeAddForm').addEventListener('click', () => {
-            document.getElementById('addForm').classList.remove('active');
-        });
-
-        document.getElementById('closeEditForm').addEventListener('click', () => {
-            document.getElementById('editForm').classList.remove('active');
-        });
-
-        document.getElementById('closeDeleteForm').addEventListener('click', () => {
-            document.getElementById('deleteForm').classList.remove('active');
-        });
-
-        function fetchAnimes(type) {
-            fetch('../php/buscar_animes.php')
+            // Verifica se o usuário está logado
+            fetch('../php/check_login_status.php')
                 .then(response => response.json())
                 .then(data => {
-                    const editSelect = document.getElementById('editSelect');
-                    const deleteSelect = document.getElementById('deleteSelect');
-                    
-                    if (type === 'edit') {
-                        editSelect.innerHTML = data.map(anime => 
-                            `<option value="${anime.id}">${anime.titulo}</option>`
-                        ).join('');
+                    updateNavMenu(data.loggedIn);
+                })
+                .catch(error => console.error('Erro ao verificar status de login:', error));
+
+            // Scripts para gerenciamento de formulários
+            document.getElementById('addOption').addEventListener('click', () => {
+                document.getElementById('addForm').classList.add('active');
+                document.getElementById('editForm').classList.remove('active');
+                document.getElementById('deleteForm').classList.remove('active');
+            });
+
+            document.getElementById('editOption').addEventListener('click', () => {
+                document.getElementById('addForm').classList.remove('active');
+                document.getElementById('editForm').classList.add('active');
+                document.getElementById('deleteForm').classList.remove('active');
+                fetchAnimes('edit');
+            });
+
+            document.getElementById('deleteOption').addEventListener('click', () => {
+                document.getElementById('addForm').classList.remove('active');
+                document.getElementById('editForm').classList.remove('active');
+                document.getElementById('deleteForm').classList.add('active');
+                fetchAnimes('delete');
+            });
+
+            document.getElementById('closeAddForm').addEventListener('click', () => {
+                document.getElementById('addForm').classList.remove('active');
+            });
+
+            document.getElementById('closeEditForm').addEventListener('click', () => {
+                document.getElementById('editForm').classList.remove('active');
+            });
+
+            document.getElementById('closeDeleteForm').addEventListener('click', () => {
+                document.getElementById('deleteForm').classList.remove('active');
+            });
+
+            function fetchAnimes(type) {
+                fetch('../php/buscar_animes.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        const editSelect = document.getElementById('editSelect');
+                        const deleteSelect = document.getElementById('deleteSelect');
                         
-                        editSelect.addEventListener('change', (event) => {
-                            const selectedAnime = data.find(anime => anime.id == event.target.value);
-                            if (selectedAnime) {
-                                document.getElementById('editTitulo').value = selectedAnime.titulo;
-                                document.getElementById('editCategoria').value = selectedAnime.categoria;
-                                document.getElementById('editDescricao').value = selectedAnime.descricao;
-                                document.getElementById('editAvaliacao').value = selectedAnime.avaliacao;
-                                document.getElementById('editResenha').value = selectedAnime.resenha;
-                            }
-                        });
-                    }
-                    
-                    if (type === 'delete') {
-                        deleteSelect.innerHTML = data.map(anime => 
-                            `<option value="${anime.id}">${anime.titulo}</option>`
-                        ).join('');
-                    }
-                });
-        }
+                        if (type === 'edit') {
+                            editSelect.innerHTML = data.map(anime => 
+                                `<option value="${anime.id}">${anime.titulo}</option>`
+                            ).join('');
+                            
+                            editSelect.addEventListener('change', (event) => {
+                                const selectedAnime = data.find(anime => anime.id == event.target.value);
+                                if (selectedAnime) {
+                                    document.getElementById('editTitulo').value = selectedAnime.titulo;
+                                    document.getElementById('editCategoria').value = selectedAnime.categoria;
+                                    document.getElementById('editDescricao').value = selectedAnime.descricao;
+                                    document.getElementById('editAvaliacao').value = selectedAnime.avaliacao;
+                                    document.getElementById('editResenha').value = selectedAnime.resenha;
+                                }
+                            });
+                        }
+                        
+                        if (type === 'delete') {
+                            deleteSelect.innerHTML = data.map(anime => 
+                                `<option value="${anime.id}">${anime.titulo}</option>`
+                            ).join('');
+                        }
+                    });
+            }
+        });
     </script>
 </body>
 </html>
