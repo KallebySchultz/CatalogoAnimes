@@ -126,6 +126,7 @@ main h1, main p {
     margin: 0 0 10px;
     text-align: center; /* Adiciona centralização do texto */
     overflow-wrap: break-word; /* Quebra palavras longas para evitar estouro de container */
+    color:#333;
 }
 
 
