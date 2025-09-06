@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Animes - Demo Logado</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Demo styles for anime cards on homepage */
+        .anime-item {
+            display: inline-block;
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 200px;
+            text-align: center;
+        }
+        .anime-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .anime-item img {
+            width: 140px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .anime-item h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 1em;
+        }
+        .anime-item p {
+            margin: 2px 0;
+            color: #666;
+            font-size: 0.8em;
+        }
+        .anime-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #aaa;
+        }
+        .close-btn:hover {
+            color: #000;
+        }
+        .modal-content img {
+            width: 150px;
+            height: 200px;
+            object-fit: cover;
+            float: left;
+            margin-right: 20px;
+            border-radius: 8px;
+        }
+        .modal-info h2 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+        .resenha {
+            font-style: italic;
+            color: #555;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html">
+                <img src="images/logo.png" alt="Logo do Site">
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="html/assistidos.html">Assistidos</a></li>
+                <li><a href="html/esperando.html">Esperando Continuação</a></li>
+                <li><a href="html/assistindo.html">Assistindo</a></li>
+                <li><a href="html/queroassistir.html">Quero Assistir</a></li>
+                <li id="auth-options">
+                    <img src="images/login.png" alt="Auth Options">
+                    <div id="auth-menu">
+                        <a href="html/gerenciar.html">Gerenciar</a>
+                        <a href="php/logout.php">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="banner">
+            <img src="images/banner.png" alt="Banner Principal">
+            <div class="banner-content">
+                <h1>Bem-vindo ao Catálogo de Animes</h1>
+                <p id="banner-message">Organize os seus animes de maneira organizada e bonita.</p>
+            </div>
+        </section>
+        
+        <section id="destaques">
+            <h2>Destaques</h2>
+            <div class="anime-list" id="destaques-list">
+                <div class="anime-item" data-anime='{"titulo":"Classroom of the Elite","imagem":"uploads/class.jpg","descricao":"Comédia, Drama e Suspense Psicológico - Anime que mostra a vida em um colégio de elite com várias provas diferenciadas com vários alunos habilidosos focando na história do brabo, frio e calculista Kiyotaka Ayanokouji.","avaliacao":"9.3","resenha":"Com certeza um dos meus animes favoritos, ele tem uma história bem interessante e apesar de alguns episódios com a qualidade abaixo da média, cada um dos episódios é único e serve para acrescentar na história, mostrando como um dos melhores protagonistas dos animes se vira em diferentes tipos de situações."}'>
+                    <img src="uploads/class.jpg" alt="Classroom of the Elite">
+                    <h3>Classroom of the Elite</h3>
+                    <p>Avaliação: 9.3/10</p>
+                </div>
+                <div class="anime-item" data-anime='{"titulo":"Death Note","imagem":"uploads/Death Note.png","descricao":"Suspense e Sobrenatural - Light Yagami, um estudante brilhante, encontra um caderno sobrenatural chamado Death Note que pertence a um shinigami chamado Ryuk. Qualquer pessoa cujo nome for escrito no caderno morre.","avaliacao":"9.5","resenha":"Uma obra-prima do gênero suspense psicológico. A batalha de mentes entre Light e L é fascinante e mantém o espectador sempre na expectativa. Definitivamente um dos melhores animes já criados."}'>
+                    <img src="uploads/Death Note.png" alt="Death Note">
+                    <h3>Death Note</h3>
+                    <p>Avaliação: 9.5/10</p>
+                </div>
+                <div class="anime-item" data-anime='{"titulo":"Solo Leveling","imagem":"uploads/solo.png","descricao":"Ação e Fantasia - Há mais de uma década, surgiu um portal que conecta nosso mundo a uma dimensão diferente, despertando poderes únicos em algumas pessoas chamadas caçadores. Sung Jinwoo, o caçador mais fraco, se depara com uma masmorra dupla e, gravemente ferido, aceita uma misteriosa missão.","avaliacao":"8.5","resenha":"Pegada de protagonista muito fraco que consegue se tornar o mais poderoso. Em pouco tempo, ele vai evoluindo suas habilidades, mas vai perdendo sua humanidade. Pelo que assisti, gostei muito e recomendo. Espero que até o final mantenha a qualidade. Animação impecável, trilha sonora excelente e boa história."}'>
+                    <img src="uploads/solo.png" alt="Solo Leveling">
+                    <h3>Solo Leveling</h3>
+                    <p>Avaliação: 8.5/10</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="assistidos">
+            <h2>Assistidos</h2>
+            <div class="anime-list" id="assistidos-list">
+                <div class="anime-item" data-anime='{"titulo":"Toradora!","imagem":"uploads/toradora.png","descricao":"Comédia Romântica e Slice of Life - Ryuji é mal interpretado por causa de seu olhar ameaçador, fazendo todos pensarem que ele é um delinquente. No segundo ano do ensino médio, ele encontra Aisaka Taiga, uma garota pequena apelidada de Tigre de Bolso por sua personalidade egoísta e explosiva.","avaliacao":"8.8","resenha":"Um dos melhores animes do gênero, anime que desenvolve muito bem uma história de romance e é bem relaxante e divertido de assistir, infelizmente achei que o final poderia ter sido um pouco melhor elaborado, mas terminou de maneira positiva."}'>
+                    <img src="uploads/toradora.png" alt="Toradora!">
+                    <h3>Toradora!</h3>
+                    <p>Avaliação: 8.8/10</p>
+                </div>
+                <div class="anime-item" data-anime='{"titulo":"Charlotte","imagem":"uploads/Charlotte.png","descricao":"Drama e Sobrenatural - Em um mundo onde alguns adolescentes desenvolvem poderes especiais, Yu Otosaka pode brevemente possuir outras pessoas. Ele usa esse poder para trapacear nos estudos até ser descoberto por Nao Tomori.","avaliacao":"8.2","resenha":"Um anime emocionalmente envolvente com uma premissa interessante sobre poderes sobrenaturais. Embora tenha alguns problemas de ritmo, os momentos emocionais são muito bem executados e deixam uma marca duradoura."}'>
+                    <img src="uploads/Charlotte.png" alt="Charlotte">
+                    <h3>Charlotte</h3>
+                    <p>Avaliação: 8.2/10</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="esperando">
+            <h2>Esperando Continuação</h2>
+            <div class="anime-list" id="esperando-list">
+                <div class="anime-item" data-anime='{"titulo":"Mashle Muscle","imagem":"uploads/mash.png","descricao":"Ação, Aventura e Fantasia - Em um mundo onde todos usam magia, Mash Burnedead (vulgo filho do Saitama) treinou a vida toda para compensar sua falta de poderes mágicos. Na base da porrada, ele enfrentará vários magos poderosos para conquistar seu objetivo.","avaliacao":"8.6","resenha":"Definitivamente um anime muito bom. Ele tem bastante comédia e, em vários momentos, deixa você empolgado com o Mash usando apenas sua força de maneira inusitada para derrotar seus inimigos. Apesar de ter bastante foco em comédia, o anime segue uma história contínua e vai avançando."}'>
+                    <img src="uploads/mash.png" alt="Mashle Muscle">
+                    <h3>Mashle Muscle</h3>
+                    <p>Avaliação: 8.6/10</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="queroassistir">
+            <h2>Quero Assistir</h2>
+            <div class="anime-list" id="queroassistir-list">
+                <div class="anime-item" data-anime='{"titulo":"Tower of God","imagem":"uploads/Tower of God.png","descricao":"Ação e Aventura - Bam está disposto a arriscar tudo para encontrar sua melhor amiga Rachel, mesmo que isso signifique escalar a misteriosa Torre. Na Torre, cada andar tem seus próprios monstros e armadilhas, e apenas os eleitos podem chegar ao topo.","avaliacao":"7.8","resenha":"Uma adaptação interessante de um webtoon coreano. A animação é única e a história tem potencial, embora alguns aspectos da adaptação possam ser confusos para quem não leu o material original."}'>
+                    <img src="uploads/Tower of God.png" alt="Tower of God">
+                    <h3>Tower of God</h3>
+                    <p>Avaliação: 7.8/10</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Catálogo de Animes criado por Kalleby Schultz</p>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal" id="animeModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">&times;</button>
+            <img id="modalImage" src="" alt="Anime Image">
+            <div class="modal-info">
+                <h2 id="modalTitle"></h2>
+                <p id="modalDescription"></p>
+                <p id="modalRating"></p>
+                <p class="resenha" id="modalReview"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Demo functionality for anime cards and modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const animeItems = document.querySelectorAll('.anime-item');
+            const modal = document.getElementById('animeModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const modalRating = document.getElementById('modalRating');
+            const modalReview = document.getElementById('modalReview');
+            const closeModal = document.getElementById('closeModal');
+
+            // Add click event to each anime item
+            animeItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const animeData = JSON.parse(item.dataset.anime);
+                    
+                    modalImage.src = animeData.imagem;
+                    modalTitle.textContent = animeData.titulo;
+                    modalDescription.textContent = animeData.descricao;
+                    modalRating.textContent = `Avaliação: ${animeData.avaliacao}/10`;
+                    modalReview.textContent = `Resenha: ${animeData.resenha}`;
+                    
+                    modal.style.display = 'block';
+                });
+            });
+
+            // Close modal
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            // Auth menu toggle
+            const authOptions = document.getElementById('auth-options');
+            const authMenu = document.getElementById('auth-menu');
+            
+            authOptions.addEventListener('click', function() {
+                authMenu.style.display = authMenu.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+    </script>
+</body>
+</html>
